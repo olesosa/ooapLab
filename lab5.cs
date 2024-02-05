@@ -40,7 +40,7 @@ namespace ooap5
     {
         public WeaponBase Weapon { get; set; }
         public AccessoryBase Accessory { get; set; }
-        public List<WeaponBase> weapons { get; set; }
+        public List<WeaponBase> Weapons { get; set; }
 
         public double GetWeaponSetCost()
         {
@@ -64,7 +64,7 @@ namespace ooap5
 
         public double GetMexWeaponCost()
         {
-            double maxCost = weapons.MaxBy(x => x.Cost).Cost;
+            double maxCost = Weapons.MaxBy(x => x.Cost).Cost;
 
             return maxCost;
         }
@@ -72,7 +72,7 @@ namespace ooap5
 
     public class WeaponComponent : WeaponBase, IWeaponLogic
     {
-        public List<WeaponBase> weapons { get; set; }
+        public List<WeaponBase> Weapons { get; set; }
         public double GetMexWeaponCost()
         {
             double totalCost = 0;
@@ -94,7 +94,7 @@ namespace ooap5
 
         public double GetWeaponSetCost()
         {
-            double maxCost = weapons.MaxBy(x => x.Cost).Cost;
+            double maxCost = Weapons.MaxBy(x => x.Cost).Cost;
 
             return maxCost;
         }
@@ -125,7 +125,7 @@ namespace ooap5
 
         public double GetWeaponSetCost()
         {
-            double maxCost = weapons.MaxBy(x => x.Cost).Cost;
+            double maxCost = Weapons.MaxBy(x => x.Cost).Cost;
 
             return maxCost;
         }
@@ -133,11 +133,11 @@ namespace ooap5
 
     public class Client
     {
-        public void PrintWeaponSetCost(IWeaponLogic weaponFacade)
-            => Console.WriteLine($"Weapon Set Cost is {weaponFacade.GetWeaponSetCost()}");
+        public void PrintWeaponSetCost(IWeaponLogic weapon)
+            => Console.WriteLine($"Weapon Set Cost is {weapon.GetWeaponSetCost()}");
 
-        public void PrintMaxWeaponSetCost(IWeaponLogic weaponFacade)
-            => Console.WriteLine($"Mex Weapon Cost is {weaponFacade.GetMexWeaponCost()}");
+        public void PrintMaxWeaponSetCost(IWeaponLogic weapon)
+            => Console.WriteLine($"Mex Weapon Cost is {weapon.GetMexWeaponCost()}");
     }
 
     public class Program
