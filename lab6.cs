@@ -1,5 +1,3 @@
-using System.Xml.Linq;
-
 namespace ooap6
 {
     public abstract class MapComponent
@@ -63,9 +61,9 @@ namespace ooap6
         }
     }
 
-    public class CityMap : MapComponent
+    public class MapPart : MapComponent
     {
-        public CityMap(string Name, int x, int y) : base(Name, x, y) { }
+        public MapPart(string Name, int x, int y) : base(Name, x, y) { }
         public override void Draw()
         {
             Console.WriteLine($"City {Name}: {x} {y}");
@@ -97,10 +95,14 @@ namespace ooap6
     {
         static void Main(string[] args)
         {
-            CityMap lviv = new CityMap("Lviv", 1, 2);
-            CityMap kyiv = new CityMap("Kyiv", 3, 4);
-
+            MapPart lviv = new MapPart("Lviv", 1, 2);
+            MapPart lSide = new MapPart("Left Side", 1, 2);
+            MapPart rSide = new MapPart("Right Side", 1, 2);
+            MapComposite kyiv = new MapComposite("Kyiv", 3, 4);
             MapComposite ukraine = new MapComposite("Ukraine", 5, 6);
+
+            kyiv.AddComponent(lSide);
+            kyiv.AddComponent(rSide);
 
             ukraine.AddComponent(lviv);
             ukraine.AddComponent(kyiv);
