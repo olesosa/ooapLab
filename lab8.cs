@@ -15,8 +15,6 @@ namespace ooap8
         public string Name { get; set; }
         public abstract void Draw();
         public abstract MapComponent FindChild(string Name);
-        public abstract void AddComponent(MapComponent component);
-        public abstract void RemoveComponent(MapComponent component);
     }
 
     public class MapComposite : MapComponent
@@ -55,12 +53,12 @@ namespace ooap8
             return null;
         }
 
-        public override void AddComponent(MapComponent component)
+        public void AddComponent(MapComponent component)
         {
             components.Add(component);
         }
 
-        public override void RemoveComponent(MapComponent component)
+        public void RemoveComponent(MapComponent component)
         {
             components.Remove(component);
         }
@@ -84,15 +82,6 @@ namespace ooap8
             {
                 throw new Exception("Not Found!");
             }
-        }
-        public override void AddComponent(MapComponent component)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void RemoveComponent(MapComponent component)
-        {
-            throw new NotImplementedException();
         }
     }
 
