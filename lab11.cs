@@ -2,11 +2,11 @@ using HtmlAgilityPack;
 
 namespace ooap11;
 
-public class IphoneParser
+public class Parser
 {
     private readonly HtmlWeb _web;
 
-    public IphoneParser(HtmlWeb web)
+    public Parser(HtmlWeb web)
     {
         _web = web;
     }
@@ -15,40 +15,86 @@ public class IphoneParser
     {
         var document = await _web.LoadFromWebAsync(url);
 
-        var title = document.DocumentNode.SelectSingleNode("//title").InnerText.Trim();
+        var titleNode = document.DocumentNode.SelectSingleNode("//title")?.InnerText.Trim();
 
-        if (title == null)
+        if (titleNode == null)
         {
-            throw new Exception("Cant get title");
+            throw new Exception("Title not found");
         }
 
-        return title;
+        return titleNode;
+    }
+
+    public async Task<string> GetNameAsync(string url)
+    {
+        var document = await _web.LoadFromWebAsync(url);
+
+        var productNameNode = document.DocumentNode.SelectSingleNode("//script[@data-hid='dataLayer']");
+        var productNameScript = productNameNode.InnerText;
+        var productNameIndex = productNameScript.IndexOf("name:");
+
+        if (productNameIndex == -1)
+        {
+            throw new Exception("Name not found");
+        }
+
+        var productNameStartIndex = productNameScript.IndexOf("\"", productNameIndex) + 1;
+        var productNameEndIndex = productNameScript.IndexOf("\"", productNameStartIndex);
+        var productName =
+            productNameScript.Substring(productNameStartIndex, productNameEndIndex - productNameStartIndex);
+
+        return productName;
+    }
+
+    public async Task<string> GetPriceAsync(string url)
+    {
+        var document = await _web.LoadFromWebAsync(url);
+
+        var priceNode = document.DocumentNode.SelectSingleNode("//script[@data-hid='dataLayer']");
+        var priceScript = priceNode.InnerText;
+        var priceIndex = priceScript.IndexOf("price:");
+
+        if (priceIndex == -1)
+        {
+            throw new Exception("Price not found");
+        }
+
+        var priceStartIndex = priceScript.IndexOf("\"", priceIndex) + 1;
+        var priceEndIndex = priceScript.IndexOf("\"", priceStartIndex);
+        var price = priceScript.Substring(priceStartIndex, priceEndIndex - priceStartIndex);
+
+        return price;
+    }
+}
+
+public class Phone
+{
+    public string Title { get; set; }
+    public string Name { get; set; }
+    public string Price { get; set; }
+
+    public override string ToString()
+    {
+        return $"Title: {Title} \n\nName: {Name} \n\nPrice: {Price}";
     }
 }
 
 public static class Program
 {
-    private const string RozetkaUrl =
-        "https://rozetka.com.ua/apple-iphone-15-pro-max-256gb-natural-titanium/p395461104/";
-
-    private const string FoxtrotUrl =
-        "https://www.foxtrot.com.ua/uk/shop/smartfoniy_i_mobilniye_telefoniy_apple_iphone_15_pro_max_256gb_deep_purple.html";
+    private const string IphoneUrl =
+        "https://allo.ua/ru/products/mobile/apple-iphone-15-pro-max-256gb-natural-titanium.html";
 
     static async Task Main(string[] args)
     {
-        var parser = new IphoneParser(new HtmlWeb());
+        var parser = new Parser(new HtmlWeb());
 
-        var tasks = new List<Task<string>>
+        var iphone = new Phone()
         {
-            parser.GetTitleAsync(RozetkaUrl),
-            parser.GetTitleAsync(FoxtrotUrl)
+            Title = await parser.GetTitleAsync(IphoneUrl),
+            Name = await parser.GetNameAsync(IphoneUrl),
+            Price = await parser.GetPriceAsync(IphoneUrl),
         };
 
-        var titles = await Task.WhenAll(tasks);
-
-        foreach (var title in titles)
-        {
-            Console.WriteLine(title);
-        }
+        Console.WriteLine(iphone);
     }
 }
